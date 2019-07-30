@@ -36,6 +36,8 @@ task( 'backup:db', function ()  {
 
     writeln( "<comment>Exporting DB to {{deploy_path}}/{{db_backups_dir}}/{$DbBackupFilename}</comment>" );
 
+//    writeln($mysqlDumpCommand); return false;
+
     run("mkdir -p {{deploy_path}}/{{db_backups_dir}}");
     run( "cd {{deploy_path}}/{{db_backups_dir}} && " . $mysqlDumpCommand );
     run( "gzip -f {{deploy_path}}/{{db_backups_dir}}/{$DbBackupFilename}" );
@@ -44,9 +46,14 @@ task( 'backup:db', function ()  {
 
 /**
  * Pull the database from a remote server and dump it into the local database
- *
+ **
  */
 task( 'pull:db', function ()  {
+
+    // check for server -- can't be local
+    if ( get('hostname') === 'localhost' ) {
+        throw new \Exception("You must specifiy a server to pull from.");
+    }
 
     $remoteDumpFilename = Utils::createDbDumpName( get('name'));
     $remoteDumpCommand = Utils::createMysqlDumpCommand(
@@ -56,7 +63,7 @@ task( 'pull:db', function ()  {
         $remoteDumpFilename
     );
 
-    $localDumpFilename = Utils::createDbDumpName( get('name'));
+    $localDumpFilename = Utils::createDbDumpName( get('local_name'));
     $localDbName = get( 'local_db_name');
     $localDbUser = get( 'local_db_user');
     $localDbPass = get( 'local_db_pass');
@@ -66,37 +73,43 @@ task( 'pull:db', function ()  {
 
     // dump remote
     writeln( "<comment>Exporting DB to {$remoteDumpFilename}</comment>" );
-    // TODO: cd('{{deploy_path}}'); ??
     run( "cd {{deploy_path}} && " . $remoteDumpCommand );
+    run( "gzip -f {{deploy_path}}/{$remoteDumpFilename}" );
 
     // download remote dump
     writeln( "<comment>Downloading DB export to {$remoteDumpFilename}</comment>" );
-    download( get('deploy_path') . '/' . $remoteDumpFilename, $remoteDumpFilename );
+    download( get('deploy_path') . '/' . $remoteDumpFilename . '.gz', $remoteDumpFilename . '.gz' );
 
     // Delete remote dump on server
     writeln( "<comment>Cleaning up {$remoteDumpFilename} on server</comment>" );
-    run( "rm {{deploy_path}}/{$remoteDumpFilename}" );
+    run( "rm {{deploy_path}}/{$remoteDumpFilename}" . '.gz' );
 
     // backup local db
     writeln( "<comment>Dumping Local DB backup up {$localDumpFilename}</comment>" );
     runLocally( $localDumpCommand );
 
+    // unzip remote dump
+    runLocally( "gzip -d {$remoteDumpFilename}" . '.gz' );
+
     // import remote db to local
-    writeln( "<comment>Importing Remote DB local</comment>" );
+    writeln( "<comment>Importing Remote DB to local DB</comment>" );
     try {
         runLocally( $localImportCommand );
     } catch (\Throwable $exception) {
         die($exception->getMessage());
     }
 
-    // delete local backup
-    writeln( "<comment>Deleting local dump {$localDumpFilename}</comment>" );
+    // delete local backup & downloads
+    writeln( "<comment>Deleting local dump {$localDumpFilename} & downloads</comment>" );
     runLocally( "rm {$localDumpFilename}" );
+    runLocally( "rm {$remoteDumpFilename}" );
 
 });
 
 /**
  * Push the local database to a remote server
+ *
+ * TODO: check this task
  *
  */
 task( 'push:db', function ()  {
@@ -107,7 +120,7 @@ task( 'push:db', function ()  {
         throw new \Exception("You must specifiy a server to push to.");
     }
 
-    $localDumpFilename = Utils::createDbDumpName( get('name'));
+    $localDumpFilename = Utils::createDbDumpName( get('local_name'));
     $localDumpCommand = Utils::createMysqlDumpCommand(
         get( 'local_db_name'),
         get( 'local_db_user'),
@@ -150,5 +163,28 @@ task( 'push:db', function ()  {
     // Delete dump on server
     writeln( "<comment>Cleaning up {$localDumpFilename} on server</comment>" );
     run( "rm {{deploy_path}}/{$localDumpFilename}" );
+
+});
+
+/**
+ * Check Db Connection
+ *
+ */
+task( 'check:db', function () {
+
+    $name = get('db_name');
+    $user = get('db_user');
+    $pass = get('db_pass');
+    $host = get('hostname');
+
+    $cmd = Utils::createMysqlCommand($name, $user, $pass);
+
+    try {
+        run($cmd);
+    } catch (\Exception $exception) {
+        throw new \Exception("Could not connect to  {$name} on {$host}<br/>: {$exception->getMessage()}");
+    }
+
+    writeln( "<comment>Fantastic! Connected to {$name} on {$host}</comment>" );
 
 });

@@ -12,30 +12,31 @@ use Deployer\Deployer;
 class Utils
 {
 
-
-    const CRAFT_IGNORED_DB_TABLES_STRING = "(
-        'assetindexdata'
-        'assettransformindex'
-        'cache'
-        'sessions'
-        'templatecaches'
-        'templatecachecriteria'
-        'templatecacheelements'
+    const CRAFT_IGNORE_DB_TABLES = [
+        'assetindexdata',
+        'assettransformindex',
+        'cache',
+        'sessions',
+        'templatecaches',
+        'templatecachecriteria',
+        'templatecacheelements',
         'templatecachequeries'
-        )";
+    ];
 
-    const CRAFT_MYSQLDUMP_DATA_ARGS = "--add-drop-table --comments --create-options --dump-date --no-autocommit --routines --set-charset --triggers ";
+    const CRAFT_MYSQLDUMP_DATA_ARGS = '--add-drop-table --comments --create-options --dump-date --no-autocommit --routines --set-charset --triggers ';
+
+    const SHOW_TABLE_SIZES_QUERY = 'SELECT table_name AS `Table`, round(((data_length + index_length) / 1024 / 1024), 2) `Size in MB`  FROM information_schema.TABLES WHERE table_schema = "mfahudso_205hudson" ORDER BY (data_length + index_length) DESC;';
 
     /**
      * Returns an attribute of the named host
      *
      *
-     * @param string $host
-     * @param string $attr
+     * @param host
+     * @param attr
      *
      * @return string
      */
-    public static function getHostAttribute($host = 'local', $attr)
+    public static function getHostAttribute($host, $attr)
     {
         return Deployer::get()->hostSelector->getByHostnames($host)[0]->get($attr);
     }
@@ -43,7 +44,7 @@ class Utils
     /**
      * Returns a formatted filename with timestamp.
      *
-     * @param $name
+     * @param name
      *
      * @return string
      */
@@ -53,27 +54,48 @@ class Utils
     }
 
     /**
+     * Returns a mysql connection command
+     *
+     * @param db_name
+     * @param user
+     * @param pass
+     * @param filename
+     *
+     * @return string
+     */
+    public static function createMysqlCommand($db_name, $user, $pass)
+    {
+        return "mysql -u{$user} -p'{$pass}' {$db_name}";
+    }
+
+    /**
      * Returns a mysqldump command
      *
-     * @param $db_name
-     * @param $user
-     * @param $pass
-     * @param $filename
+     * @param db_name
+     * @param user
+     * @param pass
+     * @param filename
      *
      * @return string
      */
     public static function createMysqlDumpCommand($db_name, $user, $pass, $filename)
     {
-        return "mysqldump -u{$user} -p'{$pass}' {$db_name} > {$filename}";
+        $excludeTables = '';
+        $args = self::CRAFT_MYSQLDUMP_DATA_ARGS;
+        foreach (self::CRAFT_IGNORE_DB_TABLES as $table) {
+            $excludeTables .= "--ignore-table={$db_name}.craft_" . $table . ' ';
+        }
+
+        return "mysqldump -u{$user} -p'{$pass}' {$db_name} {$args} {$excludeTables} > {$filename}";
     }
 
     /**
      * Returns a mysql command to import a file
      *
-     * @param $db_name
-     * @param $user
-     * @param $pass
-     * @param $filename
+     * @param db_name
+     * @param user
+     * @param pass
+     * @param filename
      *
      * @return string
      */

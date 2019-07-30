@@ -29,7 +29,7 @@ require 'recipe/common.php';
 require 'vendor/gregsimsic/deployer-recipes/recipes/db.php';
 require 'vendor/gregsimsic/deployer-recipes/lib/Utils.php';
 
-use \gsimsic\deployerrecipes\Utils;
+use \gregsimsic\deployerrecipes\Utils;
 use \Symfony\Component\Yaml\Yaml;
 
 inventory('hosts.yml');
@@ -55,6 +55,7 @@ set('writable_dirs', $project['writable_dirs']);
 // [Optional] Allocate tty for git clone. Default value is false.
 set('git_tty', true);
 
+set('local_name', Utils::getHostAttribute('local', 'name') );
 set('local_db_name', Utils::getHostAttribute('local', 'db_name') );
 set('local_db_user', Utils::getHostAttribute('local', 'db_user') );
 set('local_db_pass', Utils::getHostAttribute('local', 'db_pass') );
