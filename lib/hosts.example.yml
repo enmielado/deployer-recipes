@@ -1,0 +1,35 @@
+local:
+  name: local
+  hostname: localhost
+  local: true
+  db_name:
+  db_user:
+  db_pass:
+  db_backups_dir: db_backups
+  deploy_path: ~/path/to/local/site
+
+production:
+  name: production
+  hostname:
+  user:
+  port:
+  stage: production
+  branch: master
+  deploy_path: ~/path/to/remote/site
+  db_name:
+  db_user:
+  db_pass:
+  db_backups_dir: db_backups
+
+stage:
+  name: stage
+  hostname:
+  user:
+  port:
+  stage: stage
+  branch: develop
+  deploy_path: ~/path/to/remote/site
+  db_name:
+  db_user:
+  db_pass:
+  db_backups_dir: db_backups

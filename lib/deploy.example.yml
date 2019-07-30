@@ -1,0 +1,24 @@
+repo: https://gregsimsic@bitbucket.org/gregsimsic/XXXX.git
+# stored outside of the releases folder
+shared_dirs:
+  - storage
+
+# stored outside of the releases folder
+shared_files:
+  - .env
+  - hosts.yml
+
+# these are removed from remote hosts after the git pull
+remove_dirs:
+  - src
+
+remove_files:
+  - deploy.yml
+
+# unused
+sync_dirs:
+  - web/media
+  - web/assets
+
+#unused
+writable_dirs:
