@@ -1,0 +1,16 @@
+{
+    "name": "gsimsic/deployer-recipes",
+    "description": "Deployer recipes",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "gsimsic",
+            "email": "greg@gregsimsic.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "deployer/deployer": ">=6.0"
+    }
+}
