@@ -19,10 +19,10 @@
 namespace Deployer;
 
 require 'recipe/common.php';
-require 'vendor/gsimsic/deployer-recipes/recipes/db.php';
-require 'vendor/gsimsic/deployer-recipes/lib/DeployerUtils.php';
+require 'vendor/gregsimsic/deployer-recipes/recipes/db.php';
+require 'vendor/gregsimsic/deployer-recipes/lib/DeployerUtils.php';
 
-use \gsimsic\deployerrecipes\Utils;
+use \gregsimsic\deployerrecipes\Utils;
 use \Symfony\Component\Yaml\Yaml;
 
 inventory('hosts.yml');

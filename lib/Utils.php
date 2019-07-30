@@ -5,7 +5,7 @@
  * Time: 7:17 AM
  */
 
-namespace gsimsic\deployerrecipes;
+namespace gregsimsic\deployerrecipes;
 
 use Deployer\Deployer;
 

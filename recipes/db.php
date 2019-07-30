@@ -7,7 +7,7 @@
 
 namespace Deployer;
 
-use \gsimsic\deployerrecipes\Utils;
+use \gregsimsic\deployerrecipes\Utils;
 
 /**
  * Create symlink to find Mamp mysql.sock
