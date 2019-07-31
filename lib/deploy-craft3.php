@@ -27,6 +27,7 @@ namespace Deployer;
 
 require 'recipe/common.php';
 require 'vendor/gregsimsic/deployer-recipes/recipes/db.php';
+require 'vendor/gregsimsic/deployer-recipes/recipes/sync.php';
 require 'vendor/gregsimsic/deployer-recipes/lib/Utils.php';
 
 use \gregsimsic\deployerrecipes\Utils;
@@ -61,35 +62,17 @@ set('local_db_user', Utils::getHostAttribute('local', 'db_user') );
 set('local_db_pass', Utils::getHostAttribute('local', 'db_pass') );
 set('local_root', Utils::getHostAttribute('local', 'deploy_path') );
 
+set('sync_dirs', Utils::getHostAttribute('local', 'sync_dirs') );
+
 
 /////////////////////
 
-// test
+desc('Test Task: dep t -o tt=rabbit');
 task('t', function () {
 
     // this works: dep t -o tt=rabbit
     writeln( 'tt: '. get('tt') ); // rabbit
 
-});
-
-// upload assets
-task('upload:assets', function () {
-
-    // must pick a remote host
-    if ( get('hostname') === 'localhost' ) {
-        throw new \Exception("No remote host specified");
-    }
-    upload('{{local_root}}/assets/', '{{release_path}}/assets');
-});
-
-// upload assets
-task('download:assets', function () {
-
-    // must pick a remote host
-    if ( get('hostname') === 'localhost' ) {
-        throw new \Exception("No remote host specified");
-    }
-    download('{{release_path}}/assets','{{local_root}}/assets/');
 });
 
 task('removefiles', function () {
