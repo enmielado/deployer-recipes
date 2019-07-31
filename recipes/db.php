@@ -19,12 +19,11 @@ task( 'mysql:ln', function () {
 
 /**
  * Create a backup of the database (on any server)
- *  defaults to local
+ *
+ * TODO: there is also a craft cli command: ./craft backup/db
  *
  */
-task( 'backup:db', function ()  {
-
-    // Note: there is also a craft cli command: ./craft backup/db
+task( 'db:backup', function ()  {
 
     $DbBackupFilename = Utils::createDbDumpName( get('name'));
     $mysqlDumpCommand = Utils::createMysqlDumpCommand(
@@ -36,8 +35,6 @@ task( 'backup:db', function ()  {
 
     writeln( "<comment>Exporting DB to {{deploy_path}}/{{db_backups_dir}}/{$DbBackupFilename}</comment>" );
 
-//    writeln($mysqlDumpCommand); return false;
-
     run("mkdir -p {{deploy_path}}/{{db_backups_dir}}");
     run( "cd {{deploy_path}}/{{db_backups_dir}} && " . $mysqlDumpCommand );
     run( "gzip -f {{deploy_path}}/{{db_backups_dir}}/{$DbBackupFilename}" );
@@ -46,13 +43,13 @@ task( 'backup:db', function ()  {
 
 /**
  * Pull the database from a remote server and dump it into the local database
- **
+ *
  */
-task( 'pull:db', function ()  {
+task( 'db:pull', function ()  {
 
     // check for server -- can't be local
     if ( get('hostname') === 'localhost' ) {
-        throw new \Exception("You must specifiy a server to pull from.");
+        throw new \Exception("You can't pull from local to local!");
     }
 
     $remoteDumpFilename = Utils::createDbDumpName( get('name'));
@@ -63,10 +60,10 @@ task( 'pull:db', function ()  {
         $remoteDumpFilename
     );
 
-    $localDumpFilename = Utils::createDbDumpName( get('local_name'));
-    $localDbName = get( 'local_db_name');
-    $localDbUser = get( 'local_db_user');
-    $localDbPass = get( 'local_db_pass');
+    $localDumpFilename = Utils::createDbDumpName( host('local')->get('name'));
+    $localDbName = host('local')->get('db_name');
+    $localDbUser = host('local')->get( 'db_user');
+    $localDbPass = host('local')->get('db_pass');
 
     $localDumpCommand = Utils::createMysqlDumpCommand( $localDbName, $localDbUser, $localDbPass, $localDumpFilename );
     $localImportCommand = Utils::createMysqlImportCommand( $localDbName, $localDbUser, $localDbPass, $remoteDumpFilename );
@@ -112,19 +109,18 @@ task( 'pull:db', function ()  {
  * TODO: check this task
  *
  */
-task( 'push:db', function ()  {
+task( 'db:push', function ()  {
 
     // check for server -- can't be local
     if ( get('hostname') === 'localhost' ) {
-//        Context::get()->getHost()->getHostname();
-        throw new \Exception("You must specifiy a server to push to.");
+        throw new \Exception("You can't push to local!");
     }
 
-    $localDumpFilename = Utils::createDbDumpName( get('local_name'));
+    $localDumpFilename = Utils::createDbDumpName( host('local')->get('name'));
     $localDumpCommand = Utils::createMysqlDumpCommand(
-        get( 'local_db_name'),
-        get( 'local_db_user'),
-        get( 'local_db_pass'),
+        host('local')->get('db_name'),
+        host('local')->get( 'db_user'),
+        host('local')->get('db_pass'),
         $localDumpFilename
     );
 
@@ -160,7 +156,7 @@ task( 'push:db', function ()  {
         throw new \Exception($exception->getMessage());
     }
 
-    // Delete dump on server
+    // Delete dump on remote
     writeln( "<comment>Cleaning up {$localDumpFilename} on server</comment>" );
     run( "rm {{deploy_path}}/{$localDumpFilename}" );
 
@@ -170,7 +166,7 @@ task( 'push:db', function ()  {
  * Check Db Connection
  *
  */
-task( 'check:db', function () {
+task( 'db:check', function () {
 
     $name = get('db_name');
     $user = get('db_user');

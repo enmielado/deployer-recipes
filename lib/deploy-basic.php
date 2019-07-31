@@ -1,6 +1,8 @@
 <?php
 /*
- * BASIC DEPLOY FILE -- no git, non-atomic -- just a library of helpers
+ *
+ * BASIC DEPLOY RECIPE -- no git, non-atomic
+ *
  *
  */
 
@@ -9,49 +11,45 @@ namespace Deployer;
 require 'recipe/common.php';
 require 'vendor/gregsimsic/deployer-recipes/recipes/db.php';
 require 'vendor/gregsimsic/deployer-recipes/recipes/sync.php';
+require 'vendor/gregsimsic/deployer-recipes/recipes/oper.php';
 require 'vendor/gregsimsic/deployer-recipes/lib/Utils.php';
 
-use \gregsimsic\deployerrecipes\Utils;
-use \Symfony\Component\Yaml\Yaml;
+/**
+ *  CONFIG
+ *
+ */
 
+// read hosts from config
 inventory('hosts.yml');
 
-$project = Yaml::parseFile('deploy.yml');
-
-//set('default_stage', 'stage');
-set('application', 'deploy test');
-
-// Writable dirs by web server
-set('writable_dirs', $project['writable_dirs']);
-
-// [Optional] Allocate tty for git clone. Default value is false.
-set('git_tty', true);
-
-set('local_name', host('local')->get('name') );
-set('local_db_name', host('local')->get('db_name') );
-set('local_db_user', host('local')->get( 'db_user') );
-set('local_db_pass', host('local')->get('db_pass') );
-set('local_root', host('local')->get( 'deploy_path') );
-
-set('sync_dirs', host('local')->get( 'sync_dirs') );
+set('application', 'APP_NAME');
 
 set('default_stage', 'stage');
 
+// The list of directories given as options to the sync task -- no trailing slashes
+set('sync_options_dirs', [
+    'web/assets',
+    'templates'
+]);
 
-/////////////////////
+/**
+ *  TASKS
+ *
+ */
 
-// test
-desc('Test Task: dep t -o tt=rabbit');
-task('t', function () {
+desc('Custom Task');
+task('custom', function () {
 
-    // this works: dep t -o tt=rabbit
-    writeln( 'tt: '. get('tt') ); // rabbit
+    writeln( 'This is a custom task' );
 
 });
 
-// main deploy task
-// TODO: push db, sync:up assets, sync up templates
-desc('Basic (No Git, No Atomic) Deploy Task');
+/**
+ *  DEPLOY TASK
+ *
+ */
+// TODO: push db, sync:up files (assets, templates, etc.)
+desc('Basic Deploy Task (No Git, Not Atomic)');
 task('deploy', [
-    'deploy:info'
+    'custom'
 ]);

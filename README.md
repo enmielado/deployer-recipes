@@ -55,3 +55,22 @@ You can use `deploy:assets` as part of your deploy process. For example:
     ])->desc('Deploy your Bedrock project');
     after('deploy', 'success');
 
+## References
+
+ #### Craft 
+ * https://gist.github.com/mtwalsh/fce3c4aa416996e5900e8ac9f471dd6c
+ * https://www.enovate.co.uk/blog/2018/07/23/atomic-deployment-with-deployer
+ 
+ #### Laravel
+ * https://medium.com/@nickdenardis/zero-downtime-local-build-laravel-5-deploys-with-deployer-a152f0a1411f
+ 
+ #### General
+ * https://antonydandrea.com/deploying-with-deployer/
+ 
+ #### Shared server deployment
+ * https://discourse.roots.io/t/heres-deployer-recipes-to-deploy-bedrock/9896
+ * https://github.com/FlorianMoser/plesk-deployer
+ 
+ #### Wordpress recipes
+ * https://github.com/cstaelen/deployer-wp-recipes
+ * https://github.com/danielroe/deployer-wp-recipes

@@ -21,7 +21,7 @@ task('sync:up', function () {
         throw new \Exception("No remote host specified");
     }
 
-    $dir = askChoice('What to upload?', get('sync_dirs'));
+    $dir = askChoice('What to upload?', get('sync_options_dirs'));
 
     upload($dir . '/', '{{deploy_path}}/' . $dir );
 });
@@ -38,7 +38,7 @@ task('sync:down', function () {
         throw new \Exception("No remote host specified");
     }
 
-    $dir = askChoice('What to download?', get('sync_dirs'));
+    $dir = askChoice('What to download?', get('sync_options_dirs'));
 
     download('{{deploy_path}}/' . $dir . '/', $dir );
 });

@@ -48,7 +48,14 @@ task('get-test', function () {
         write($b = var_export($host->getHostname(), true));
     }
 
-
 //    $data = get('application');
 
 })->local()->desc('Dump project.yml to command line');
+
+desc('Gets an option from the command line: dep t -o tt=rabbit');
+task('get-option', function () {
+
+    // this works: dep t -o tt=rabbit
+    writeln( 'tt: '. get('tt') ); // rabbit
+
+});
