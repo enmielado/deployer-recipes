@@ -7,6 +7,11 @@ local:
   db_pass:
   db_backups_dir: db_backups
   deploy_path: ~/path/to/local/site
+  # only set this on localhost
+  # these must mirror folders on the remote hosts
+  sync_dirs:
+   - public/assets
+   - craft/templates/alumni
 
 production:
   name: production
