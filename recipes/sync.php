@@ -21,7 +21,7 @@ task('sync:up', function () {
         throw new \Exception("No remote host specified");
     }
 
-    $dir = askChoice('What to upload?', get('sync_options_dirs'));
+    $dir = askChoice('Choose a directory to upload?', get('sync_options_dirs'));
 
     upload($dir . '/', '{{deploy_path}}/' . $dir );
 });
@@ -38,7 +38,58 @@ task('sync:down', function () {
         throw new \Exception("No remote host specified");
     }
 
-    $dir = askChoice('What to download?', get('sync_options_dirs'));
+    $dir = askChoice('Choose a directory to download?', get('sync_options_dirs'));
 
     download('{{deploy_path}}/' . $dir . '/', $dir );
+});
+
+/**
+ *
+ * Sync a directory between remote sites on the same server with --delete flag
+ *
+ */
+desc('Sync a directory between remote sites on the same server with --delete flag');
+task('sync:dir', function () {
+
+    $hosts = Deployer::get()->hosts;
+
+    $remoteHostsByName = [];
+    $remoteHostNames = [];
+
+    foreach ($hosts as $host) {
+        // exclude local hosts
+        if($host->getHostname() !== 'local') {
+            $remoteHostsByName[$host->getHostname()] = $host;
+            $remoteHostNames[] = $host->getHostname();
+        }
+    }
+
+    $from = askChoice('Sync media from:', $remoteHostNames);
+
+    // remove 'from' from the choices
+    if (($key = array_search($from, $remoteHostNames)) !== false) {
+        unset($remoteHostNames[$key]);
+    }
+
+    $to = askChoice('Sync media to:', $remoteHostNames);
+
+    $toPath = host($to)->get('deploy_path');
+
+    $dir = askChoice('Select a directory:', get('sync_options_dirs'));
+
+    $confirm = askConfirmation('Copy '. $dir . ' from ' . $from . ' to ' . $to . '?');
+
+    if ($confirm) {
+
+        // run command on source($from) host
+        on( host($from), function ($host) use ($toPath, $dir) {
+
+//            writeln('rsync -a --delete ' . get('deploy_path') . '/' . $dir . '/ ' . $toPath . '/' . $dir . '');
+            run('rsync -a --delete ' . get('deploy_path') . '/' . $dir . '/ ' . $toPath . '/' . $dir . '');
+
+        });
+    } else {
+        writeln("Perhaps that's best.");
+    }
+
 });
