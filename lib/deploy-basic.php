@@ -8,6 +8,7 @@ namespace Deployer;
 
 require 'recipe/common.php';
 require 'vendor/gregsimsic/deployer-recipes/recipes/db.php';
+require 'vendor/gregsimsic/deployer-recipes/recipes/sync.php';
 require 'vendor/gregsimsic/deployer-recipes/lib/Utils.php';
 
 use \gregsimsic\deployerrecipes\Utils;
@@ -26,13 +27,15 @@ set('writable_dirs', $project['writable_dirs']);
 // [Optional] Allocate tty for git clone. Default value is false.
 set('git_tty', true);
 
-set('local_name', Utils::getHostAttribute('local', 'name') );
-set('local_db_name', Utils::getHostAttribute('local', 'db_name') );
-set('local_db_user', Utils::getHostAttribute('local', 'db_user') );
-set('local_db_pass', Utils::getHostAttribute('local', 'db_pass') );
-set('local_root', Utils::getHostAttribute('local', 'deploy_path') );
+set('local_name', host('local')->get('name') );
+set('local_db_name', host('local')->get('db_name') );
+set('local_db_user', host('local')->get( 'db_user') );
+set('local_db_pass', host('local')->get('db_pass') );
+set('local_root', host('local')->get( 'deploy_path') );
 
-set('sync_dirs', Utils::getHostAttribute('local', 'sync_dirs') );
+set('sync_dirs', host('local')->get( 'sync_dirs') );
+
+set('default_stage', 'stage');
 
 
 /////////////////////
@@ -47,8 +50,7 @@ task('t', function () {
 });
 
 // main deploy task
-
-// push db, sync:up assets, sync up templates
+// TODO: push db, sync:up assets, sync up templates
 desc('Basic (No Git, No Atomic) Deploy Task');
 task('deploy', [
     'deploy:info'

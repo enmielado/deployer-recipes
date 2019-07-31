@@ -1,3 +1,4 @@
+# no trailing slashes on any directories
 local:
   name: local
   hostname: localhost
@@ -15,10 +16,10 @@ local:
 
 production:
   name: production
+  stage: prod
   hostname:
   user:
   port:
-  stage: production
   branch: master
   deploy_path: ~/path/to/remote/site
   db_name:
@@ -28,10 +29,10 @@ production:
 
 stage:
   name: stage
+  stage: stage
   hostname:
   user:
   port:
-  stage: stage
   branch: develop
   deploy_path: ~/path/to/remote/site
   db_name:
