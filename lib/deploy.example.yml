@@ -7,6 +7,7 @@ local:
   db_user:
   db_pass:
   db_backups_dir: db_backups
+  # start from User path
   deploy_path: ~/path/to/local/site
 
 production:
@@ -16,7 +17,8 @@ production:
   user:
   port:
   branch: master
-  deploy_path: ~/path/to/remote/site
+  # start from ssh login path
+  deploy_path: path/to/remote/site
   db_name:
   db_user:
   db_pass:
@@ -29,7 +31,8 @@ stage:
   user:
   port:
   branch: develop
-  deploy_path: ~/path/to/remote/site
+  # start from ssh login path
+  deploy_path: path/to/remote/site
   db_name:
   db_user:
   db_pass:
