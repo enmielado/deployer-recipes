@@ -130,7 +130,7 @@ task( 'db:push', function ()  {
     $remoteDbPass = get('db_pass');
 
     $remoteDumpCommand = Utils::createMysqlDumpCommand( $remoteDbName, $remoteDbUser, $remoteDbPass, $remoteDumpFilename );
-    $remoteImportCommand = Utils::createMysqlImportCommand( $remoteDbName, $remoteDbUser, $remoteDbPass, $localDumpFilename );
+    $remoteImportCommand = Utils::createMysqlImportCommand( $remoteDbName, $remoteDbUser, $remoteDbPass, get('deploy_path') . '/' . $localDumpFilename );
 
     // dump local db
     writeln( "<comment>Dumping Local DB backup up {$localDumpFilename}</comment>" );
@@ -156,9 +156,13 @@ task( 'db:push', function ()  {
         throw new \Exception($exception->getMessage());
     }
 
-    // Delete dump on remote
+    // Delete local dump on remote
     writeln( "<comment>Cleaning up {$localDumpFilename} on server</comment>" );
     run( "rm {{deploy_path}}/{$localDumpFilename}" );
+
+    // Delete remote backup dump on remote
+    writeln( "<comment>Cleaning up {$remoteDumpFilename} on server</comment>" );
+    run( "rm {{deploy_path}}/{$remoteDumpFilename}" );
 
 });
 
