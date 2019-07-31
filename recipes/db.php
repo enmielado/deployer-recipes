@@ -27,6 +27,7 @@ task( 'db:backup', function ()  {
 
     $DbBackupFilename = Utils::createDbDumpName( get('name'));
     $mysqlDumpCommand = Utils::createMysqlDumpCommand(
+        has('db_host') ? $db_host = get('db_host') : null,
         get('db_name'),
         get('db_user'),
         get('db_pass'),
@@ -54,6 +55,7 @@ task( 'db:pull', function ()  {
 
     $remoteDumpFilename = Utils::createDbDumpName( get('name'));
     $remoteDumpCommand = Utils::createMysqlDumpCommand(
+        has('db_host') ? $db_host = get('db_host') : null,
         get('db_name'),
         get('db_user'),
         get('db_pass'),
@@ -65,8 +67,8 @@ task( 'db:pull', function ()  {
     $localDbUser = host('local')->get( 'db_user');
     $localDbPass = host('local')->get('db_pass');
 
-    $localDumpCommand = Utils::createMysqlDumpCommand( $localDbName, $localDbUser, $localDbPass, $localDumpFilename );
-    $localImportCommand = Utils::createMysqlImportCommand( $localDbName, $localDbUser, $localDbPass, $remoteDumpFilename );
+    $localDumpCommand = Utils::createMysqlDumpCommand( null, $localDbName, $localDbUser, $localDbPass, $localDumpFilename );
+    $localImportCommand = Utils::createMysqlImportCommand( null, $localDbName, $localDbUser, $localDbPass, $remoteDumpFilename );
 
     // dump remote
     writeln( "<comment>Exporting DB to {$remoteDumpFilename}</comment>" );
@@ -118,6 +120,7 @@ task( 'db:push', function ()  {
 
     $localDumpFilename = Utils::createDbDumpName( host('local')->get('name'));
     $localDumpCommand = Utils::createMysqlDumpCommand(
+        null,
         host('local')->get('db_name'),
         host('local')->get( 'db_user'),
         host('local')->get('db_pass'),
@@ -125,12 +128,13 @@ task( 'db:push', function ()  {
     );
 
     $remoteDumpFilename = Utils::createDbDumpName( get('name'));
+    $remoteDbHost = has('db_host') ? get('db_host') : null;
     $remoteDbName = get('db_name');
     $remoteDbUser = get('db_user');
     $remoteDbPass = get('db_pass');
 
-    $remoteDumpCommand = Utils::createMysqlDumpCommand( $remoteDbName, $remoteDbUser, $remoteDbPass, $remoteDumpFilename );
-    $remoteImportCommand = Utils::createMysqlImportCommand( $remoteDbName, $remoteDbUser, $remoteDbPass, get('deploy_path') . '/' . $localDumpFilename );
+    $remoteDumpCommand = Utils::createMysqlDumpCommand( $remoteDbHost, $remoteDbName, $remoteDbUser, $remoteDbPass, $remoteDumpFilename );
+    $remoteImportCommand = Utils::createMysqlImportCommand( $remoteDbHost, $remoteDbName, $remoteDbUser, $remoteDbPass, get('deploy_path') . '/' . $localDumpFilename );
 
     // dump local db
     writeln( "<comment>Dumping Local DB backup up {$localDumpFilename}</comment>" );
@@ -172,12 +176,14 @@ task( 'db:push', function ()  {
  */
 task( 'db:check', function () {
 
+    $db_host = has('db_host') ? $db_host = get('db_host') : null;
     $name = get('db_name');
     $user = get('db_user');
     $pass = get('db_pass');
+
     $host = get('hostname');
 
-    $cmd = Utils::createMysqlCommand($name, $user, $pass);
+    $cmd = Utils::createMysqlCommand($db_host, $name, $user, $pass);
 
     try {
         run($cmd);
