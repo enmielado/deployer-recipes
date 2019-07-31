@@ -20,7 +20,7 @@ require 'vendor/gregsimsic/deployer-recipes/lib/Utils.php';
  */
 
 // read hosts from config
-inventory('hosts.yml');
+inventory('deploy.yml');
 
 set('application', 'APP_NAME');
 set('repository', 'https://gregsimsic@bitbucket.org/gregsimsic/XXXX.git');

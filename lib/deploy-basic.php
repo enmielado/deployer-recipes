@@ -20,7 +20,7 @@ require 'vendor/gregsimsic/deployer-recipes/lib/Utils.php';
  */
 
 // read hosts from config
-inventory('hosts.yml');
+inventory('deploy.yml');
 
 set('application', 'APP_NAME');
 
@@ -28,8 +28,10 @@ set('default_stage', 'stage');
 
 // The list of directories given as options to the sync task -- no trailing slashes
 set('sync_options_dirs', [
-    'web/assets',
-    'templates'
+    'public/assets',
+    'craft/templates',
+    'craft/plugins/hudson205',
+    'public/media'
 ]);
 
 /**
