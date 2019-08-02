@@ -21,6 +21,10 @@ task('sync:up', function () {
         throw new \Exception("No remote host specified");
     }
 
+    writeln('');
+    writeln('<comment>Uploading to ' . get('stage') . '</comment>');
+    writeln('');
+
     $dir = askChoice('Choose a directory to upload:', get('sync_options_dirs'));
 
     upload($dir . '/', '{{deploy_path}}/' . $dir );
@@ -38,6 +42,10 @@ task('sync:down', function () {
         throw new \Exception("No remote host specified");
     }
 
+    writeln('');
+    writeln('<comment>Downloading from ' . get('stage') . '</comment>');
+    writeln('');
+
     $dir = askChoice('Choose a directory to download:', get('sync_options_dirs'));
 
     download('{{deploy_path}}/' . $dir . '/', $dir );
@@ -51,7 +59,7 @@ task('sync:down', function () {
  *
  */
 desc('Sync a directory between remote sites on the same server with --delete flag');
-task('sync:dir', function () {
+task('sync:remotes', function () {
 
     $hosts = Deployer::get()->hosts;
 
