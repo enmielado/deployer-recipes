@@ -28,6 +28,7 @@ task( 'db:backup', function ()  {
     $DbBackupFilename = Utils::createDbDumpName( get('name'));
     $mysqlDumpCommand = Utils::createMysqlDumpCommand(
         has('db_host') ? $db_host = get('db_host') : null,
+        get('db_port'),
         get('db_name'),
         get('db_user'),
         get('db_pass'),
@@ -56,6 +57,7 @@ task( 'db:pull', function ()  {
     $remoteDumpFilename = Utils::createDbDumpName( get('name'));
     $remoteDumpCommand = Utils::createMysqlDumpCommand(
         has('db_host') ? $db_host = get('db_host') : null,
+        get('db_port'),
         get('db_name'),
         get('db_user'),
         get('db_pass'),
@@ -63,12 +65,14 @@ task( 'db:pull', function ()  {
     );
 
     $localDumpFilename = Utils::createDbDumpName( host('local')->get('name'));
+    $localDbHost = host('local')->get('db_host');
+    $localDbPort = host('local')->get('db_port');
     $localDbName = host('local')->get('db_name');
     $localDbUser = host('local')->get( 'db_user');
     $localDbPass = host('local')->get('db_pass');
 
-    $localDumpCommand = Utils::createMysqlDumpCommand( null, $localDbName, $localDbUser, $localDbPass, $localDumpFilename );
-    $localImportCommand = Utils::createMysqlImportCommand( null, $localDbName, $localDbUser, $localDbPass, $remoteDumpFilename );
+    $localDumpCommand = Utils::createMysqlDumpCommand( $localDbHost, $localDbPort, $localDbName, $localDbUser, $localDbPass, $localDumpFilename );
+    $localImportCommand = Utils::createMysqlImportCommand( $localDbHost, $localDbPort, $localDbName, $localDbUser, $localDbPass, $remoteDumpFilename );
 
     // dump remote
     writeln( "<comment>Exporting DB to {$remoteDumpFilename}</comment>" );
@@ -142,7 +146,7 @@ task( 'db:push', function ()  {
     runLocally( $localDumpCommand );
 
     // backup remote db
-    writeln( "<comment>backing up remote DB to {$remoteDumpFilename}</comment>" );
+    writeln( "<comment>Backing up remote DB to {$remoteDumpFilename}</comment>" );
     run( "cd {{deploy_path}} && " . $remoteDumpCommand );
 
     // upload local dump
