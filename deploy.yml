@@ -1,0 +1,40 @@
+# no trailing slashes on any directories
+local:
+  name: local
+  hostname: 127.0.0.1
+  local: true
+  db_host: 127.0.0.1
+  db_port: 33060
+  db_name: name
+  db_user: homestead
+  db_pass: secret
+  db_backups_dir: db_backups
+  deploy_path: ~/path/to/site
+
+stage:
+  name: stage
+  stage: stage
+  hostname: s6.fcomet.com
+  user: ---user---
+  port: 17177
+  branch: develop
+  deploy_path: path/to/site
+  db_port: 3306
+  db_name: ---name---
+  db_user: ---user---
+  db_pass: ---pass---
+  db_backups_dir: db_backups
+
+production:
+  name: production
+  stage: prod
+  hostname: s6.fcomet.com
+  user: ---user---
+  port: 17177
+  branch: master
+  deploy_path: path/to/site
+  db_port: 3306
+  db_name: ---name---
+  db_user: ---user---
+  db_pass: ---pass---
+  db_backups_dir: db_backups
