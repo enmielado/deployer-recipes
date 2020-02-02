@@ -48,11 +48,11 @@ class Utils
      *
      * @return string
      */
-    public static function createMysqlCommand($db_host, $db_name, $user, $pass)
+    public static function createMysqlCommand($db_host, $db_name, $user, $pass, $db_port=3306)
     {
         $host = ($db_host) ? '-h '.$db_host : '';
 
-        return "mysql {$host} -u{$user} -p'{$pass}' {$db_name}";
+        return "mysql {$host} -u{$user} -p'{$pass}' -P{$db_port} {$db_name}";
     }
 
     /**
@@ -65,7 +65,7 @@ class Utils
      *
      * @return string
      */
-    public static function createMysqlDumpCommand($db_host, $db_name, $user, $pass, $filename)
+    public static function createMysqlDumpCommand($db_host, $db_port, $db_name, $user, $pass, $filename)
     {
         $excludeTables = '';
         $args = self::CRAFT_MYSQLDUMP_DATA_ARGS;
@@ -74,8 +74,9 @@ class Utils
         }
 
         $host = ($db_host) ? '-h '.$db_host : '';
+        $port = ($db_port) ? '-P'.$db_port : '';
 
-        return "mysqldump {$host} -u{$user} -p'{$pass}' {$db_name} {$args} {$excludeTables} > {$filename}";
+        return "mysqldump {$host} -u{$user} -p'{$pass}' {$port} {$db_name} {$args} {$excludeTables} > {$filename}";
     }
 
     /**
@@ -88,11 +89,12 @@ class Utils
      *
      * @return string
      */
-    public static function createMysqlImportCommand($db_host, $db_name, $user, $pass, $filename)
+    public static function createMysqlImportCommand($db_host, $db_port, $db_name, $user, $pass, $filename)
     {
         $host = ($db_host) ? '-h '.$db_host : '';
+        $port = ($db_port) ? '-P'.$db_port : '';
 
-        return "mysql {$host} -u{$user} -p'{$pass}' {$db_name} < {$filename}";
+        return "mysql {$host} -u{$user} -p'{$pass}' {$port} {$db_name} < {$filename}";
     }
 
     /**
