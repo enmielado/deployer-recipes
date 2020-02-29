@@ -2,13 +2,11 @@
     "name": "gregsimsic/deployer-recipes",
     "description": "Deployer recipes",
     "type": "library",
+    "version": "0.5.1",
     "authors": [
         {
             "name": "gsimsic",
             "email": "greg@gregsimsic.com"
         }
-    ],
-    "require": {
-        "deployer/deployer": ">=6.0"
-    }
+    ]
 }
