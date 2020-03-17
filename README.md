@@ -14,11 +14,11 @@
 
 ## Installation
 
-run `composer require gregsimsic/deployer-recipes`.
+run `composer require enmielado/deployer-recipes`.
 
 Make sure to include recipe files in your `deploy.php`:
 
-    require 'vendor/gregsimsic/deployer-recipes/recipes/db.php';
+    require 'vendor/enmielado/deployer-recipes/recipes/db.php';
 
 ## Configuration
 
