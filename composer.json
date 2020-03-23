@@ -2,12 +2,15 @@
     "name": "enmielado/deployer-recipes",
     "description": "Deployer recipes",
     "type": "library",
-    "version": "0.5.4",
+    "version": "0.6",
     "authors": [
         {
             "name": "veryfine",
             "email": "info@veryfine.work"
         }
     ],
-    "license": "MIT"
+    "license": "MIT",
+    "require-dev": {
+        "deployer/deployer": "6.4.5"
+    }
 }
